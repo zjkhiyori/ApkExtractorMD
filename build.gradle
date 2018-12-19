@@ -15,6 +15,14 @@ buildscript {
     }
 }
 
+ext {
+    minSdk = 21
+    sdk = 26
+    supportVersion = "26.1.0"
+    versionCode = 1
+    versionName = "0.1.0"
+}
+
 allprojects {
     repositories {
         google()
