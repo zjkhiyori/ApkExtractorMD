@@ -48,6 +48,7 @@ public class RecycleViewFragment extends Fragment{
         recyclerView.setHasFixedSize(true);
         recyclerView.addItemDecoration(new MaterialViewPagerHeaderDecorator());
         recyclerView.setAdapter(new RecycleViewFragmentAdapter(
+                getContext(),
                 dataSource,
                 getContext().getPackageManager(),
                 type

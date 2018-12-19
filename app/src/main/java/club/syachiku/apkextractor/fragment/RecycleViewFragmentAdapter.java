@@ -3,11 +3,15 @@ package club.syachiku.apkextractor.fragment;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Environment;
+import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
+import android.support.v4.content.FileProvider;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -29,17 +33,24 @@ public class RecycleViewFragmentAdapter extends RecyclerView.Adapter{
     private List<PackageInfo> dataSource;
     private PackageManager packageManager;
     private int type;
+    private Context context;
 //    private final String BACKUP_PATH = "/sdcard/Download";
     private final String BACKUP_PATH = Environment.getExternalStorageDirectory().getPath() + "/Download/";
     private final int TYPE_USER = 0;
     private final int TYPE_SYSTEM = 1;
     private final int TYPE_ALL = 2;
 
+    interface SnackBarClickListener {
+        void onClick(@Nullable View v);
+    }
+
     public RecycleViewFragmentAdapter(
+            Context context,
             List<PackageInfo> dataSource,
             PackageManager packageManager,
             int type
     ) {
+        this.context = context;
         this.dataSource = dataSource;
         this.packageManager = packageManager;
         this.type = type;
@@ -57,7 +68,6 @@ public class RecycleViewFragmentAdapter extends RecyclerView.Adapter{
         TextView titleView = holder.itemView.findViewById(R.id.itemTitle);
         TextView packageIdView = holder.itemView.findViewById(R.id.itemPackageId);
         ImageView iconView = holder.itemView.findViewById(R.id.itemIcon);
-        final Context context = holder.itemView.getContext();
 
 
         final PackageInfo packageInfo = dataSource.get(position);
@@ -69,6 +79,7 @@ public class RecycleViewFragmentAdapter extends RecyclerView.Adapter{
         packageIdView.setText(packageName);
         iconView.setImageDrawable(icon);
         CardView cardView = holder.itemView.findViewById(R.id.card_view);
+
         switch (type) {
             case TYPE_USER:
                 cardView.setForeground(context.getResources().getDrawable(R.drawable.card_foreground_cyan));
@@ -80,19 +91,26 @@ public class RecycleViewFragmentAdapter extends RecyclerView.Adapter{
                 cardView.setForeground(context.getResources().getDrawable(R.drawable.card_foreground_primary));
                 break;
         }
+
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                AlertDialog.Builder builder = new AlertDialog.Builder(context, R.style.Theme_AppCompat_Light_Dialog_Alert);
                 builder.setTitle(R.string.dialog_title)
                         .setMessage(appName + "\n" + packageName)
                         .setPositiveButton(R.string.positive_btn, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                String dest = doCopy(packageInfo, appName);
+                                final String dest = doCopy(packageInfo, appName);
                                 showSnackBar(
                                         context.getResources().getString(R.string.snackbar_msg) + dest,
-                                        holder.itemView
+                                        holder.itemView,
+                                        new SnackBarClickListener() {
+                                            @Override
+                                            public void onClick(@Nullable View v) {
+                                                share(dest, context.getResources().getString(R.string.share_msg));
+                                            }
+                                        }
                                 );
                             }
                         })
@@ -149,13 +167,31 @@ public class RecycleViewFragmentAdapter extends RecyclerView.Adapter{
         return dest;
     }
 
-    private void showSnackBar(String message, View holderView) {
+    private void showSnackBar(String message, View holderView, final SnackBarClickListener listener) {
         Snackbar.make(holderView, message, Snackbar.LENGTH_LONG)
                 .setAction(R.string.snackbar_btn, new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-
+                        listener.onClick(v);
                     }
                 }).show();
+    }
+
+    private void share(String filePath, String title) {
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(new File(filePath)));
+        intent.putExtra(
+                Intent.EXTRA_STREAM,
+                FileProvider.getUriForFile(
+                        context,
+                        context.getApplicationContext().getPackageName() + ".club.syachiku.apkextractor.provider",
+                        new File(filePath)
+                )
+        );
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        intent.setType("application/octet-stream");
+        Intent chooser = Intent.createChooser(intent, title);
+        chooser.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        context.startActivity(chooser);
     }
 }
