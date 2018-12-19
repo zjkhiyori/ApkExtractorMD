@@ -8,6 +8,7 @@
         android:id="@+id/card_view"
         android:layout_width="match_parent"
         android:layout_height="80dp"
+        android:foreground="@drawable/card_foreground"
         app:cardCornerRadius="2dp"
         app:cardElevation="2dp"
         android:layout_marginBottom="@dimen/cardMarginVertical"
@@ -29,6 +30,7 @@
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
+                android:layout_marginLeft="5dp"
                 android:orientation="vertical"
                 android:gravity="center_vertical">
                 <TextView

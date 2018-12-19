@@ -60,9 +60,19 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public HeaderDesign getHeaderDesign(int page) {
                 switch (page) {
+                    case 0:
+                        return HeaderDesign.fromColorResAndUrl(
+                                R.color.colorCyan,
+                                ""
+                        );
                     case 1:
                         return HeaderDesign.fromColorResAndUrl(
                                 R.color.colorSkyBlue,
+                                ""
+                        );
+                    case 2:
+                        return HeaderDesign.fromColorResAndUrl(
+                                R.color.colorPrimary,
                                 ""
                         );
                     default:

@@ -47,7 +47,11 @@ public class RecycleViewFragment extends Fragment{
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setHasFixedSize(true);
         recyclerView.addItemDecoration(new MaterialViewPagerHeaderDecorator());
-        recyclerView.setAdapter(new RecycleViewFragmentAdapter(dataSource, getContext().getPackageManager()));
+        recyclerView.setAdapter(new RecycleViewFragmentAdapter(
+                dataSource,
+                getContext().getPackageManager(),
+                type
+        ));
     }
 
     private List<PackageInfo> initDataSource(int type) {

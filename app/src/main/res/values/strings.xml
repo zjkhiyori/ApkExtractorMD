@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">ApkExtractor</string>
+    <string name="dialog_title">Are you sure to extract the application ?</string>
+    <string name="positive_btn">Confirm</string>
+    <string name="negative_btn">Cancel</string>
+    <string name="snackbar_msg">Extracted to</string>
+    <string name="snackbar_btn">share</string>
+    <string name="share_msg">Share with your gay ♂ friends</string>
 </resources>

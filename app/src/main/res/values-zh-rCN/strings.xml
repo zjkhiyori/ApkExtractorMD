@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">ApkExtractor</string>
+    <string name="dialog_title">请确认是否备份该应用？</string>
+    <string name="positive_btn">确定</string>
+    <string name="negative_btn">取消</string>
+    <string name="snackbar_msg">已备份至</string>
+    <string name="snackbar_btn">分享</string>
+    <string name="share_msg">分享给你的好基♂友</string>
+</resources>

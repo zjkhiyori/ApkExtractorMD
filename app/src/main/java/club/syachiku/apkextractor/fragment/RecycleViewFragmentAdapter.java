@@ -1,13 +1,26 @@
 package club.syachiku.apkextractor.fragment;
 
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.Drawable;
+import android.os.Environment;
+import android.support.design.widget.Snackbar;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.channels.FileChannel;
 import java.util.List;
 
 import club.syachiku.apkextractor.R;
@@ -15,10 +28,21 @@ import club.syachiku.apkextractor.R;
 public class RecycleViewFragmentAdapter extends RecyclerView.Adapter{
     private List<PackageInfo> dataSource;
     private PackageManager packageManager;
+    private int type;
+//    private final String BACKUP_PATH = "/sdcard/Download";
+    private final String BACKUP_PATH = Environment.getExternalStorageDirectory().getPath() + "/Download/";
+    private final int TYPE_USER = 0;
+    private final int TYPE_SYSTEM = 1;
+    private final int TYPE_ALL = 2;
 
-    public RecycleViewFragmentAdapter(List<PackageInfo> dataSource, PackageManager packageManager) {
+    public RecycleViewFragmentAdapter(
+            List<PackageInfo> dataSource,
+            PackageManager packageManager,
+            int type
+    ) {
         this.dataSource = dataSource;
         this.packageManager = packageManager;
+        this.type = type;
     }
 
     @Override
@@ -29,18 +53,109 @@ public class RecycleViewFragmentAdapter extends RecyclerView.Adapter{
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        TextView title = holder.itemView.findViewById(R.id.itemTitle);
-        TextView packageId = holder.itemView.findViewById(R.id.itemPackageId);
-        ImageView icon = holder.itemView.findViewById(R.id.itemIcon);
-        PackageInfo packageInfo = dataSource.get(position);
-        title.setText(packageInfo.applicationInfo.loadLabel(packageManager).toString());
-        packageId.setText(packageInfo.packageName);
-        icon.setImageDrawable(packageInfo.applicationInfo.loadIcon(packageManager));
+    public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position) {
+        TextView titleView = holder.itemView.findViewById(R.id.itemTitle);
+        TextView packageIdView = holder.itemView.findViewById(R.id.itemPackageId);
+        ImageView iconView = holder.itemView.findViewById(R.id.itemIcon);
+        final Context context = holder.itemView.getContext();
+
+
+        final PackageInfo packageInfo = dataSource.get(position);
+        final String appName = packageInfo.applicationInfo.loadLabel(packageManager).toString();
+        final String packageName = packageInfo.packageName;
+        Drawable icon = packageInfo.applicationInfo.loadIcon(packageManager);
+
+        titleView.setText(appName);
+        packageIdView.setText(packageName);
+        iconView.setImageDrawable(icon);
+        CardView cardView = holder.itemView.findViewById(R.id.card_view);
+        switch (type) {
+            case TYPE_USER:
+                cardView.setForeground(context.getResources().getDrawable(R.drawable.card_foreground_cyan));
+                break;
+            case TYPE_SYSTEM:
+                cardView.setForeground(context.getResources().getDrawable(R.drawable.card_foreground));
+                break;
+            case TYPE_ALL:
+                cardView.setForeground(context.getResources().getDrawable(R.drawable.card_foreground_primary));
+                break;
+        }
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                builder.setTitle(R.string.dialog_title)
+                        .setMessage(appName + "\n" + packageName)
+                        .setPositiveButton(R.string.positive_btn, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                String dest = doCopy(packageInfo, appName);
+                                showSnackBar(
+                                        context.getResources().getString(R.string.snackbar_msg) + dest,
+                                        holder.itemView
+                                );
+                            }
+                        })
+                        .setNegativeButton(R.string.negative_btn, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+
+                            }
+                        }).show();
+            }
+        });
     }
 
     @Override
     public int getItemCount() {
         return dataSource.size();
+    }
+
+    private String doCopy(PackageInfo packageInfo, String appName) {
+        String source = packageInfo.applicationInfo.sourceDir;
+        String dest = BACKUP_PATH + appName + ".apk";
+        try {
+            if (!new File(BACKUP_PATH).exists()) {
+                new File(BACKUP_PATH).mkdir();
+            }
+            File destFile = new File(dest);
+            if (destFile.exists()) {
+                destFile.delete();
+            }
+            destFile.createNewFile();
+
+            FileInputStream in = new FileInputStream(new File(source));
+            FileOutputStream out = new FileOutputStream(destFile);
+            FileChannel inC = in.getChannel();
+            FileChannel outC = out.getChannel();
+            int length;
+            while (true) {
+                if (inC.position() == inC.size()) {
+                    inC.close();
+                    outC.close();
+                    break;
+                }
+                if ((inC.size() - inC.position()) < 1024 * 1024) {
+                    length = (int) (inC.size() - inC.position());
+                } else {
+                    length = 1024 * 1024;
+                }
+                inC.transferTo(inC.position(), length, outC);
+                inC.position(inC.position() + length);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return dest;
+    }
+
+    private void showSnackBar(String message, View holderView) {
+        Snackbar.make(holderView, message, Snackbar.LENGTH_LONG)
+                .setAction(R.string.snackbar_btn, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                    }
+                }).show();
     }
 }
