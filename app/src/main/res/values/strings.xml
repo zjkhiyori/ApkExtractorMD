@@ -1,5 +1,8 @@
 <resources>
     <string name="app_name">ApkExtractor</string>
+    <string name="user_app">USER APP</string>
+    <string name="system_app">SYSTEM APP</string>
+    <string name="all_app">ALL APP</string>
     <string name="dialog_title">Are you sure to extract the application ?</string>
     <string name="positive_btn">Confirm</string>
     <string name="negative_btn">Cancel</string>

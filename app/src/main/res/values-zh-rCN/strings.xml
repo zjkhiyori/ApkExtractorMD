@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">ApkExtractor</string>
+    <string name="user_app">用户应用</string>
+    <string name="system_app">系统应用</string>
+    <string name="all_app">全部应用</string>
     <string name="dialog_title">请确认是否备份该应用？</string>
     <string name="positive_btn">确定</string>
     <string name="negative_btn">取消</string>

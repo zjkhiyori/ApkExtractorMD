@@ -45,15 +45,21 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public CharSequence getPageTitle(int position) {
+                String pageTitle;
                 switch (position) {
                     case 0:
-                        return "User APP";
+                        pageTitle = getResources().getString(R.string.user_app);
+                        break;
                     case 1:
-                        return "System APP";
+                        pageTitle = getResources().getString(R.string.system_app);
+                        break;
                     case 2:
-                        return "All APP";
+                        pageTitle = getResources().getString(R.string.all_app);
+                        break;
+                    default:
+                        pageTitle = "";
                 }
-                return "";
+                return pageTitle;
             }
         });
         viewPager.setMaterialViewPagerListener(new MaterialViewPager.Listener() {
