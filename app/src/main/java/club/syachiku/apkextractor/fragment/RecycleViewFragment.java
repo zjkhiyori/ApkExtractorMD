@@ -50,7 +50,6 @@ public class RecycleViewFragment extends Fragment{
         recyclerView.setAdapter(new RecycleViewFragmentAdapter(
                 getContext(),
                 dataSource,
-                getContext().getPackageManager(),
                 type
         ));
     }

@@ -40,19 +40,14 @@ public class RecycleViewFragmentAdapter extends RecyclerView.Adapter{
     private final int TYPE_SYSTEM = 1;
     private final int TYPE_ALL = 2;
 
-    interface SnackBarClickListener {
-        void onClick(@Nullable View v);
-    }
-
     public RecycleViewFragmentAdapter(
             Context context,
             List<PackageInfo> dataSource,
-            PackageManager packageManager,
             int type
     ) {
         this.context = context;
         this.dataSource = dataSource;
-        this.packageManager = packageManager;
+        this.packageManager = context.getPackageManager();
         this.type = type;
     }
 
@@ -167,6 +162,10 @@ public class RecycleViewFragmentAdapter extends RecyclerView.Adapter{
         return dest;
     }
 
+    interface SnackBarClickListener {
+        void onClick(@Nullable View v);
+    }
+
     private void showSnackBar(String message, View holderView, final SnackBarClickListener listener) {
         Snackbar.make(holderView, message, Snackbar.LENGTH_LONG)
                 .setAction(R.string.snackbar_btn, new View.OnClickListener() {
@@ -179,7 +178,7 @@ public class RecycleViewFragmentAdapter extends RecyclerView.Adapter{
 
     private void share(String filePath, String title) {
         Intent intent = new Intent(Intent.ACTION_SEND);
-        intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(new File(filePath)));
+//        intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(new File(filePath)));
         intent.putExtra(
                 Intent.EXTRA_STREAM,
                 FileProvider.getUriForFile(
