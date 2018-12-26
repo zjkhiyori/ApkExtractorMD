@@ -1,10 +1,10 @@
 package club.syachiku.apkextractor;
 
+import android.util.Log;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
 
 import com.github.florent37.materialviewpager.MaterialViewPager;
 import com.github.florent37.materialviewpager.header.HeaderDesign;
@@ -22,12 +22,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initView() {
-        setTitle("");
         viewPager = findViewById(R.id.materialViewPager);
-        final Toolbar toolbar = viewPager.getToolbar();
-        if (toolbar != null) {
-            setSupportActionBar(toolbar);
-        }
         viewPager.getViewPager().setAdapter(new FragmentStatePagerAdapter(getSupportFragmentManager()) {
             @Override
             public Fragment getItem(int position) {
