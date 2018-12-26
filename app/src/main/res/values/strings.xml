@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">ApkExtractor</string>
+    <string name="app_name">ApkExtractorMD</string>
     <string name="user_app">USER APP</string>
     <string name="system_app">SYSTEM APP</string>
     <string name="all_app">ALL APP</string>

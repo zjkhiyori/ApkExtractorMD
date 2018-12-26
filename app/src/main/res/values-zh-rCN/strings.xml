@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">ApkExtractor</string>
+    <string name="app_name">ApkExtractorMD</string>
     <string name="user_app">用户应用</string>
     <string name="system_app">系统应用</string>
     <string name="all_app">全部应用</string>
